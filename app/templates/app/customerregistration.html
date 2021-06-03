@@ -1,0 +1,93 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Customer Registration{% endblock title %}
+{% block main-content %}
+<div class="container">
+ <div class="row my-3">
+  <div class="col-sm-6 offset-sm-3">
+   <h3>Customer Registration</h3>
+   <hr>
+   {% if otp %}
+
+   <form action="" method="post" novalidate class="shadow p-5">
+    {% if messages %}
+        {% for message in messages %}
+          <p {% if message.tags %} class="alert alert-{{message.tags}} mb-5" {% endif %}>{{message}}</p>
+        {% endfor %}
+    {% endif %}
+
+    {% csrf_token %}
+    <fieldset class="form-group">
+         <legend class="border-bottom display">
+           <h3 class="float-left">OTP Verify Check Your Mail</h3>
+         </legend>
+         <input type="hidden" name="usr" value="{{usr.username}}">
+         <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">OTP</span>
+          </div>
+          <input type="text" class="form-control" placeholder="Enter Your OTP" aria-label="OTP" aria-describedby="basic-addon1" name='otp' required>
+        </div>
+
+    </fieldset>
+       
+       <input type="submit" value="Verify" class="btn btn-primary">
+       <br>
+       <div class="text-center text-primary fw-bold"><small>Send OTP again ?
+
+        <a href="#" class="text-danger" onclick="ReSendOTP('{{usr.username}}','resendOTPmess')"><i id="resendOTPmess">Resend</i>OTP</a>
+        
+        </small>
+      </div>
+
+</form>
+  {% if form.non_field_errors %}
+  {% for error in form.non_field_errors %}
+  <p class="alert alert-danger my-3">{{error}}</p>
+  {% endfor %}
+  {% endif %}
+
+
+   {% else %}
+   <form action="" method="post" novalidate class="shadow p-5">
+      {% if messages %}
+          {% for message in messages %}
+            <p {% if message.tags %} class="alert alert-{{message.tags}} mb-5" {% endif %}>{{message}}</p>
+          {% endfor %}
+      {% endif %}
+
+
+
+      {% csrf_token %}
+     {% for fm in form %}
+         <div class="form-group mb-3">
+            {{fm.label_tag}} {{fm}} 
+            <small class="text-danger">{{fm.errors|striptags}}
+
+            </small>
+         </div>
+         {% endfor %}
+         
+         <input type="submit" value="Submit" class="btn btn-primary">
+         <br>
+         <div class="text-center text-primary fw-bold"><small>Existing User ?<a href="{% url 'login' %}" class="text-danger">Login Now</a></small></div>
+
+    {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+    <p class="alert alert-danger my-3">{{error}}</p>
+    {% endfor %}
+    {% endif %}
+   </form>
+   {% endif %}
+  </div>
+ </div>
+</div>
+{% endblock main-content %}
+
+
+
+<!--https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4OuaPBX8vcN9y_bXpQO_bz_AH9SOGXHKYuUFDjNufnA7VD2DEpZKm_cAqbbbTUjfK6nliUfMX0clp29xOayhVb48NWrZQ
+
+
+<a href="#" class="text-danger" onclick="ReSendOTP('{{usr.username}}','resendOTPmess')"><i id="resendOTPmess">Resend</i>OTP</a>
+-->

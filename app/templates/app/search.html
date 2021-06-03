@@ -1,0 +1,104 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Search{% endblock title %}
+{% block main-content %}
+
+<div class="container my-5">
+    <div class="row">
+       <h2>Search Results: </h2>
+       {% if products|length < 1 %}
+       <p>No search results </p>
+       <ul>
+       <li><p>Your search query-<b>{{query}}</b>-did not match any products......</p></li>
+       <br>
+       <li><p>Suggestions:</p></li>
+       <li>Try different Keywords.</li>
+       <li>Make sure that all words are spelled correctly.</li>
+       <li>Try different keywords.</li>
+       <li>Try more general keywords.,</li>
+       <li>Try fewer keywords.</li>
+       </ul>
+      {% endif %}
+
+     {% if products %}
+     {% for product in products %} 
+     <div class="col-sm-6 text-center align-self-center">
+        <br>
+
+      <a href="{% url 'product-detail' product.id %}" class="btn"><img  src="{{product.product_image.url}}" alt="" class="img-fluid img-thumbnail " style="width:200%;"></a>
+
+      <br>
+      <div class="fb-comments" data-href="http://localhost:8000/search/{{product.id}}" data-width="" data-numposts="5"></div>
+
+     </div>
+     <div class="col-sm-5 offset-sm-1">
+ <hr>      
+<br>
+<br>
+      <h2>Product Title:{{product.title}}</h2>
+      <hr>
+      <p>{{product.description}}</p> <br>
+      <h4>Rs. {{product.discounted_price}} <small class="fw-light text-decoration-line-through">Rs. {{product.selling_price}}</small></h4> <br>
+     
+
+      {% if request.user.is_authenticated %} 
+      <form action="/cart" class="d-inline" >
+         <input type="hidden" name="prod_id" id="prod_id" value={{product.id}}>
+         <button type="submit" class="btn btn-primary shadow px-5 py-2">Your Cart have {{ totalitem }} item</button>
+      </form>
+   
+      {% endif %}
+      
+    
+   
+      {% if not request.user.is_authenticated %}
+      <form action="/add-to-cart" class="d-inline" >
+         <input type="hidden" name="prod_id" id="prod_id" value={{product.id}}>
+         <button type="submit" class="btn btn-primary shadow px-5 py-2">My Cart</button>
+      </form>
+      {% endif %}
+
+      
+   
+     <!--  <a href="{% url 'add-to-cart' %}" class="btn btn-primary shadow px-5 py-2">Add to Cart</a> -->
+      <a href="{% url 'product-detail' product.id %}" class="btn btn-danger shadow px-5 py-2 ms-4">Product Detail</a>
+      <h5 class="mt-5">Available Offers</h5>
+      <ul>
+       <li>Bank Offer 5% Unlimited Cashback on Flipkart Axis Bank Credit</li>
+       <li>Special Price Get extra ₹3000 off (price inclusive of discount)</li>
+       <li>No cost EMI ₹1,667/month. Standard EMI also available</li>
+       <li>Partner Offer ₹2000 Flipkart Gift Card on Every 1000th Transaction with a new Visa Debit/Credit Card</li>
+      </ul>
+     </div>
+     {% endfor %}
+     {% endif %} 
+     
+    </div>
+   </div>
+
+
+
+{% endblock main-content %}
+
+
+
+
+
+
+<!--<div>
+   <span>
+      {% if page_obj.has_previous %}
+        <a href="?page={{page_obj.next_page_number}}">Previous</a>
+      {% endif %}
+      
+      <span>{{page_obj.number}}</span>
+
+      {% if page_obj.has_next %}
+        <a href="?page={{page_obj.next_page_number}}">Next</a>
+      {% endif %}
+
+   </span>
+
+
+
+</div>-->

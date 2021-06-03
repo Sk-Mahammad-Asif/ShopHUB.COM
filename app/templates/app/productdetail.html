@@ -1,0 +1,407 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Product Detail{% endblock title %}
+{% block main-content %}
+{% load humanize %}
+{% load extras %}
+
+<Style>
+
+
+.star-rating {
+  border:solid 1px #ccc;
+  display:flex;
+  flex-direction: row-reverse;
+  font-size:1.5em;
+  justify-content:space-around;
+  padding:0 .2em;
+  text-align:center;
+  width:5em;
+}
+
+.star-rating input {
+  display:none;
+}
+
+.star-rating label {
+  color:#ccc;
+  cursor:pointer;
+}
+
+.star-rating :checked ~ label {
+  color:#f90;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color:#fc0;
+}
+
+
+
+.slider{
+    height: 80vh;
+    display: flex;
+}
+.product img{
+    height: 19vh;
+    margin-bottom: 9px;
+    cursor: pointer;
+    opacity: 0.6;
+
+}
+
+.product img:hover{
+    opacity: 1;
+
+}
+
+
+.preview img{
+    height: 100%;
+    padding-left: 30px;
+
+}
+
+
+.btn{
+    transition: all .5s;
+    -moz-transition: all .5s;
+    -webkit-transition: all .5s;
+    -o-transition: all .5s;
+    -ms-transition: all .5s;
+}
+
+.btn:hover {
+ transform : scale(1.25);
+ -moz-transform : scale(1.25);
+ -webkit-transform : scale(1.25);
+ -o-transform : scale(1.25);
+ -ms-transform : scale(1.25);
+
+}
+
+.icon
+{
+   color: #0086b3;
+   cursor: pointer;
+   text-shadow: 5px 8px 15px #2a93b6;
+   transition: .5s;
+}
+.icon:hover{
+   color:#ba0015;
+   transform:scale(1);
+}
+
+</Style>
+
+
+<script>
+
+</script>
+
+
+
+
+
+<!--Product start -->
+<div class="container my-5">
+ <div class="row">
+  <div class="col-sm-6 " >
+
+
+   <div class="slider">
+      <div class="product ">
+          <img src="{{product.product_image.url}}" alt=""  onclick="clickme(this)">
+          <img src="{{product.product_image_child1.url}}" alt="" onclick="clickme(this)">
+          <img src="{{product.product_image_child2.url}}" alt="" onclick="clickme(this)">
+          <img src="{{product.product_image_child3.url}}" alt="" onclick="clickme(this)">
+
+
+      </div>
+      <div class="preview">
+          <img src="{{product.product_image.url}}" id="imagebox" alt="" class="btn">
+      </div>
+  </div>
+
+ 
+ 
+<br>
+   <div class="fb-like" data-href="http://localhost:8000/product-detail/" data-width="" data-layout="button_count" data-action="like" data-size="large" data-share="true" style="padding-right: 100px;"></div>
+
+
+
+  </div>
+  <div class="col-sm-5 offset-sm-1">
+   <h2>Product Title:{{product.title}}</h2>
+   <hr>
+   <p>{{product.description}}</p> <br>
+   <h4>Rs. {{product.discounted_price}} <small class="fw-light text-decoration-line-through">Rs. {{product.selling_price}}</small></h4> <br>
+   {% if request.user.is_authenticated %}
+   {% if item_already_in_cart %}
+     <a href="{% url 'showcart' %}" class="btn btn-warning shadow px-5 py-2 ms-4">Go to Cart</a>
+   {% else %}  
+   <form action="/add-to-cart" class="d-inline">
+      <input type="hidden" name="prod_id" id="prod_id" value={{product.id}}>
+      <button type="submit" class="btn btn-primary shadow px-5 py-2">Add to Cart</button>
+   </form>
+   {% endif %}
+   {% endif %}
+
+   {% if not request.user.is_authenticated %}
+   <form action="/add-to-cart" class="d-inline">
+      <input type="hidden" name="prod_id" id="prod_id" value={{product.id}}>
+      <button type="submit" class="btn btn-primary shadow px-5 py-2">Add to Cart</button>
+   </form>
+   {% endif %}
+
+
+
+  <!--  <a href="{% url 'add-to-cart' %}" class="btn btn-primary shadow px-5 py-2">Add to Cart</a> -->
+   <a href="{% url 'checkout' %}" class="btn btn-danger shadow px-5 py-2 ms-4">Buy Now</a>
+   <h5 class="mt-5">Available Offers</h5>
+   <ul>
+    <li>Bank Offer 5% Unlimited Cashback on Flipkart Axis Bank Credit</li>
+    <li>Special Price Get extra ₹3000 off (price inclusive of discount)</li>
+    <li>No cost EMI ₹1,667/month. Standard EMI also available</li>
+    <li>Partner Offer ₹2000 Flipkart Gift Card on Every 1000th Transaction with a new Visa Debit/Credit Card</li>
+   </ul>
+
+<!--reviews stuff starsts -->
+ <div class="maindiv">
+
+   {% if product.get_rating  %}
+   <div  > 
+    <a href="javascript: void 0;" style="text-decoration: none;color: black;"> <p style="font-size: 60px; padding-left: 50px;">
+      {{product.get_rating |floatformat:1}}</p>
+      <p style="font-size:20px; padding-left: 40px; box-sizing: border-box;">
+         OUT OF 5</p>
+      <p style="font-size:xx-large;">
+         <i class="fa fa-users" aria-hidden="true"></i>    ({{comments.count}} ratings total)</p></a>
+   </div>
+
+
+ 
+<div class="ratings-component">
+
+   <div>
+     <a href="javascript: void 0;" style="text-decoration: none; color: green;"><span>5<i class="fa fa-star " aria-hidden="true"></i> </span>
+     <progress max="100" value="{{product.count_rating5}}"  class="bg-success"></progress>  <span>{{product.count_rating5}}%</span></a>
+  </div>
+
+   <div>
+     <a href="javascript: void 0;" style="text-decoration: none; color: orange;"><span>4<i class="fa fa-star " aria-hidden="true"></i> </span>
+     <progress max="100" value="{{product.count_rating4}}"  class="bg-warning"></progress>  <span>{{product.count_rating4}}%</span></a>
+   </div>
+
+   <div>
+      <a href="javascript: void 0;" style="text-decoration: none; color: blue"><span>3<i class="fa fa-star " aria-hidden="true"></i> </span>
+      <progress max="100" value="{{product.count_rating3}}"  class="bg-success"></progress>  <span>{{product.count_rating3}}%</span></a>
+   </div>
+
+    <div>
+         <a href="javascript: void 0;" style="text-decoration: none; color: lightgreen "><span>2<i class="fa fa-star " aria-hidden="true"></i> </span>
+         <progress max="100" value="{{product.count_rating2}}"  class="bg-success"></progress>  <span>{{product.count_rating2}}%</span></a>
+   </div>   
+   
+   <div>
+      <a href="javascript: void 0;" style="text-decoration: none; color: red;"><span>1<i class="fa fa-star " aria-hidden="true"></i> </span>
+      <progress max="100" value="{{product.count_rating1}}"  class="bg-success"></progress>  <span>{{product.count_rating1}}%</span></a>
+   </div>
+
+</div> 
+{% endif %}
+</div>  
+<!--reviews stuff ends -->
+
+
+
+  
+
+  </div>
+ </div>
+</div>
+<!--Product end -->
+<br>
+<hr>
+{% if product.category == "BW" %}
+<!-- 1st Product Slider -->
+<div class="m-3">
+   <h2>ShopHUB Bottom Wears</h2>
+   <!-- Slider 1 -->
+   <div class="owl-carousel zoom" id="slider1">
+     {% for b in bottomwears %}
+    <a href="{% url 'product-detail' b.id %}" class="btn"><div class="item"><img src="{{b.product_image.url}}"   alt="" height="200px" style="border-radius: 5%;"><span class="fw-bold">{{b.title}}</span><br><span class="fs-5">Rs. {{b.discounted_price}}</span> <br> <span class="badge bg-info" style="color: yellow;"><i class="fa fa-star " aria-hidden="true"></i>{{b.get_rating|floatformat:1}}/5 (ratings) </span></div></a>
+    {% endfor %}
+   </div>
+  </div>
+  {% endif %}
+<!-- End 1st Product Slider -->
+
+<!-- 2nd Product Slider -->
+{% if product.category == "TW" %}
+<div class="mx-3">
+   <h2>ShopHUB TopWears</h2>
+   <!-- Slider 2 -->
+   <div class="owl-carousel" id="slider2">
+    {% for tp in topwears %}
+    <a href="{% url 'product-detail' tp.id %}" class="btn"><div class="item"><img src="{{tp.product_image.url}}" alt="" height="200px" style="border-radius: 5%;"><span class="fw-bold">{{tp.title}}</span><br><span class="fs-5">Rs. {{tp.discounted_price}}</span><br> <span class="badge bg-info" style="color: yellow;"><i class="fa fa-star " aria-hidden="true"></i>{{tp.get_rating|floatformat:1}}/5 (ratings) </span></div></a>
+    {% endfor %}
+   </div>
+  </div>
+  {% endif %}
+  <!-- End 2nd Product Slider -->
+  
+  <!-- 3rd Product Slider -->
+  {% if product.category == "M" %}
+  <div class="mx-3">
+    <h2>ShopHUB Mobiles</h2>
+    <!-- Slider 2 -->
+    <div class="owl-carousel" id="slider3">
+     {% for m in mobiles %}
+     <a href="{% url 'product-detail' m.id %}" class="btn"><div class="item"><img src="{{m.product_image.url}}" alt="" height="200px"><span class="fw-bold" style="border-radius: 5%;">{{m.title}}</span><br><span class="fs-5">Rs. {{m.discounted_price}}</span><br> <span class="badge bg-info" style="color: yellow;"><i class="fa fa-star " aria-hidden="true"></i>{{m.get_rating|floatformat:1}}/5 (ratings) </span></div></a>
+     {% endfor %}
+    </div>
+   </div>
+   {% endif %}
+   <!-- End 3rd Product Slider -->
+
+
+
+<br>
+<hr>
+
+
+
+
+
+
+<!--Comment start -->
+<div class="container mx-20">
+   {% if photo %}
+   <h2> <a href="{% url 'address' %}" style="padding-left:0px;"><img class="profile-pic" src="{{photo.profile_pic.url}}" alt="Avtar" width="60" height="60" style="border-radius: 50%; "></a> Comments/Reviews ({{comments.count}})  <i class="far fa-comment"></i></h2>
+   {% else %}
+   <h2> <a href="#" style="padding-left:0px;"><img class="profile-pic" src="https://assets.codepen.io/210284/sidebar-01.png" alt="img" width="60" height="60" style="border-radius: 50%; "></a> Comments/Reviews ({{comments.count}})  <i class="far fa-comment"></i></h2>
+   {% endif %}
+
+   <div>
+   {% if request.user.is_authenticated %}
+ 
+   <form action="/product-comment" method="post">
+      {% csrf_token %}
+      {% if messages %}
+      {% for message in messages %}
+        <p {% if message.tags %} class="alert alert-{{message.tags}} mb-5" {% endif %}>{{message}}</p>
+      {% endfor %}
+      {% endif %}
+      <div class="star-rating">
+         <input type="radio" id="5-stars" name="rating" value="5" />
+         <label for="5-stars" class="star">&#9733;</label>
+         <input type="radio" id="4-stars" name="rating" value="4" />
+         <label for="4-stars" class="star">&#9733;</label>
+         <input type="radio" id="3-stars" name="rating" value="3" />
+         <label for="3-stars" class="star">&#9733;</label>
+         <input type="radio" id="2-stars" name="rating" value="2" />
+         <label for="2-stars" class="star">&#9733;</label>
+         <input type="radio" id="1-star" name="rating" value="1" />
+         <label for="1-star" class="star">&#9733;</label>
+       </div>
+      <br>
+
+     <input type="text" class="form-control" name="comment" placeholder="write your comment here" required>
+     <input type="hidden" name="parentSno" value=" ">
+     </div>
+     <hr>
+     <input type="hidden" name="prod_id" id="prod_id" value={{product.id}}>
+     <button type="submit" class="btn btn-primary">Add Comment</button>
+   </form>
+    
+
+
+{% else %}
+<p >please login to post a comment <i class="far fa-comment"></i></p>
+{% endif %}
+</div>
+
+{% for comment in comments %}
+   <div class="row my-3">
+      <div class="col-md-1 px-5 ">  <a href="#" style="padding-left:0px;"><img  src="https://assets.codepen.io/210284/sidebar-01.png" alt="avtar" class="image"  width="60" height="60" style="border-radius: 50%; "></a></div>
+      <div class="col-md-11 px-0">
+
+         <b class="badge bg-info">{{comment.user.username}} </b>  <span class="badge bg-secondary "> {{comment.timestamp | naturaltime}}  </span> <b class="badge bg-info" style="color: yellow;"> you rate this product ({{comment.rate}} <i class="fa fa-star" aria-hidden="true"></i>) </b>
+         
+         <div> {{comment.comment}}</div>
+
+        
+         <div class="reply mx-0 mt-3">
+            {% if request.user.is_authenticated %}
+               <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#replyBox{{comment.sno}}" aria-expanded="false" aria-controls="replyBox{{comment.sno}}" >
+                  Reply
+               </button>        
+             <div class="collapse" id="replyBox{{comment.sno}}">
+               <div class="card card-body my-2">
+
+                  <form action="/product-comment" method="post">
+                     {% csrf_token %}
+                  <div class="form-group">
+                  <label for="comment">Post a Reply</label>     
+                  <input type="text" class="form-control" name="comment" placeholder="reply a comment" required>
+                  <input type="hidden" name="parentSno" value="{{comment.sno}}">
+                  </div>
+                  <hr>
+                  <input type="hidden" name="prod_id" id="prod_id" value={{product.id}}>
+                  <button type="submit" class="btn btn-primary">Add Reply</button>
+               </form>
+
+               </div>
+               
+             </div>
+             {% else %}
+
+             <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#replyBox{{comment.sno}}" aria-expanded="false" aria-controls="replyBox{{comment.sno}}" >
+              Login to Reply
+             </button disabled>
+
+             {% endif %}
+             <div class="replies my-2 ">
+                  {% for reply in replyDict|get_val:comment.sno %}
+                  <div class="row ">
+                     
+                     <div class="col-md-1 px-5">
+                         <a href="#" style="padding-left:0px;"><img  src="https://assets.codepen.io/210284/sidebar-02.png" alt="avtar" class="image"  width="40" height="40" style="border-radius: 50%; "></a>
+                     </div>
+
+
+
+                     <div class="col-md-11 px-0 ">
+                        <b class="badge bg-info">{{reply.user.username}} </b>  <span class="badge bg-secondary "> {{reply.timestamp | naturaltime}}</span>
+                        
+                        <div> {{reply.comment}}</div>
+                     </div>
+                     <br>
+                  </div>
+                  {% endfor %}   
+             </div>
+         </div>
+
+      </div>
+   </div>
+   {% endfor %} 
+</div>
+
+
+<!--comment End --             <i class="fas fa-user-circle fa-3x ">>
+{% endblock main-content %}
+col-sm-6 text-center align-self-center         {% csrf_token %}
+      <button class="btn" type="hidden" value="{{product.id}}" name="prod_id"  type="submit">like</i></button>{% url 'like_product' product.pk %}
+       <div class="select">
+          <select name="stars">
+             <option>select</option>
+             <option value="1">1</option>
+             <option value="2">2</option>
+             <option value="3">3</option>
+             <option value="4">4</option>
+             <option value="5">5</option>
+          </select>
+         </div>
+      <p style="font-size: 20px; font-weight: bold; color: #c59b08;">Stars Select(default)  <i class="fa fa-star " aria-hidden="true"></i></p> 

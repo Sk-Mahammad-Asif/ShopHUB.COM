@@ -1,0 +1,66 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Address{% endblock title %}
+{% block main-content %}
+{% if messages %}
+
+<style>
+ 
+ img {
+
+  border-radius:50%;
+
+}
+</style>
+
+
+
+{% for message in messages %}
+  <p {% if message.tags %} class="alert alert-{{message.tags}} mb-5" {% endif %}>{{message}}</p>
+{% endfor %}
+{% endif %}
+
+<div class="container my-5">
+ <div class="row">
+ <h3>Welcome <span class="text-capitalize">{{request.user}}</span></h3>
+  <div class="col-sm-2 border-end">
+   <ul class="list-unstyled">
+    <li class="d-grid"><a href="{% url 'profile' %}" class="btn">Profile</a></li>
+    <li class="d-grid"><a href="{% url 'address' %}" class="btn {{active}}">Address</a></li>
+   </ul>
+
+
+   <a href="{% url 'address' %}" style="padding-left:50px;"><img  src="{{photo.profile_pic.url}}" alt="avtar" class="image"  width="100" height="100" style="border-radius: 50%; "></a>
+
+
+  </div>
+  <div class="col-sm-9 offset-sm-1">
+   <div class="row">
+    {% for ad in add %}
+    <div class="col-sm-6">
+     <div class="card">
+      <div class="card-body">
+       <h3>Address {{forloop.counter}}</h3>
+       <p>Name:{{ad.name}}</p>
+       <p>Locality:{{ad.locality}}</p>
+       <p>City:{{ad.city}}</p>
+       <p>State:{{ad.state}}</p>
+       <p>Pin Code:{{ad.zipcode}}</p>
+       
+       <form action="/delete-address">
+        {% csrf_token %}
+
+        <input class="form-check-input" type="checkbox" name="adid" id="adid{{forloop.counter}}" value="{{ad.id}}" required>
+        <div class="text-end">
+            <button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Delete Address</button>
+          </div>
+      </form>
+      </div>
+     </div>
+    </div>
+    {% endfor %}
+   </div>
+  </div>
+ </div>
+</div>
+{% endblock main-content %}
